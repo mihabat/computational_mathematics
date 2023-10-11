@@ -3,36 +3,9 @@
 #include <cmath>
 using namespace std;
 
-double fact(int N)
+template<unsigned int N>
+array<double, N + 1> gauss_method(array<array<double, N + 1>, N + 1> A, array<double, N + 1> b)
 {
-    if (N == 0)
-        return 1;
-    else
-        return N * fact(N - 1);
-}
-
-template<typename RealType, unsigned int N>
-struct DerivativeCoef
-{
-    RealType centralCoef;
-    std::array<RealType, N> otherCoefs;
-};
-
-template<typename RealType, unsigned int N, unsigned int L>
-DerivativeCoef<RealType, N> calcDerivativeCoef(const std::array<RealType, N>& points) noexcept
-{
-    std::array<std::array<double, N + 1>, N + 1> A;    // A - matrix SLAU
-    for(int j = 0; j < N + 1; j++)
-        A[0][j] = 1;
-    for(int i = 1; i < N + 1; i++)
-        A[i][0] = 0;
-    for(int i = 1; i < N + 1; i++)
-        for(int j = 1; j < N + 1; j++)
-            A[i][j] = pow(points[j - 1], i) / fact(i);
-    std::array<double, N + 1> b;
-    for(int i = 0; i < N + 1; i++)
-        b[i] = 0;
-    b[L] = 1;
     for(unsigned int i = 0; i < N + 1; i++)      // straight move
     {
         if(A[i][i] == 0)
@@ -74,20 +47,54 @@ DerivativeCoef<RealType, N> calcDerivativeCoef(const std::array<RealType, N>& po
             A[j][i] = 0;
         }
     }
-    std::array<double, N> othercoef;
+    return b;
+}
+
+double fact(int N)
+{
+    if (N == 0)
+        return 1;
+    else
+        return N * fact(N - 1);
+}
+
+template<typename RealType, unsigned int N>
+struct DerivativeCoef
+{
+    RealType centralCoef;
+    array<RealType, N> otherCoefs;
+};
+
+template<typename RealType, unsigned int N, unsigned int L>
+DerivativeCoef<RealType, N> calcDerivativeCoef(const array<RealType, N>& points) noexcept
+{
+    array<array<double, N + 1>, N + 1> A;    // A - matrix SLAU
+    for(int j = 0; j < N + 1; j++)
+        A[0][j] = 1;
+    for(int i = 1; i < N + 1; i++)
+        A[i][0] = 0;
+    for(int i = 1; i < N + 1; i++)
+        for(int j = 1; j < N + 1; j++)
+            A[i][j] = pow(points[j - 1], i) / fact(i);
+    array<double, N + 1> b;
+    for(int i = 0; i < N + 1; i++)
+        b[i] = 0;
+    b[L] = 1;
+    array<double, N + 1> coefs = gauss_method<N>(A, b);
+    array<double, N> otherCoef;
     for(int i = 0; i < N; i++)
     {
-        othercoef[i] = b[i + 1];
+        otherCoef[i] = coefs[i + 1];
     }
-    DerivativeCoef<double, N> S = {b[0], othercoef};
+    DerivativeCoef<double, N> S = {coefs[0], otherCoef};
     return S;
 }
 
 int main()
 {
     const unsigned int N = 5;
-    const unsigned int L = 2;
-    const std::array<double, N> points = {-2, -1, 1, 2, 3};
+    const unsigned int L = 1;
+    const array<double, N> points = {-2, -1, 1, 2, 3};
     DerivativeCoef<double, N> S = calcDerivativeCoef<double, N, L>(points);
     cout << fixed;
     cout.precision(16);
