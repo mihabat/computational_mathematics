@@ -50,14 +50,6 @@ array<double, N + 1> gauss_method(array<array<double, N + 1>, N + 1> A, array<do
     return b;
 }
 
-double fact(int N)
-{
-    if (N == 0)
-        return 1;
-    else
-        return N * fact(N - 1);
-}
-
 template<typename RealType, unsigned int N>
 struct DerivativeCoef
 {
@@ -73,9 +65,15 @@ DerivativeCoef<RealType, N> calcDerivativeCoef(const array<RealType, N>& points)
         A[0][j] = 1;
     for(int i = 1; i < N + 1; i++)
         A[i][0] = 0;
+    int f = 1;
     for(int i = 1; i < N + 1; i++)
+    {
+        f *= i;  // замена факториалу
         for(int j = 1; j < N + 1; j++)
-            A[i][j] = pow(points[j - 1], i) / fact(i);
+        {
+            A[i][j] = std::pow(points[j - 1], i) / f;
+        }
+    }
     array<double, N + 1> b;
     for(int i = 0; i < N + 1; i++)
         b[i] = 0;
@@ -93,7 +91,7 @@ DerivativeCoef<RealType, N> calcDerivativeCoef(const array<RealType, N>& points)
 int main()
 {
     const unsigned int N = 5;
-    const unsigned int L = 1;
+    const unsigned int L = 2;
     const array<double, N> points = {-2, -1, 1, 2, 3};
     DerivativeCoef<double, N> S = calcDerivativeCoef<double, N, L>(points);
     cout << fixed;
