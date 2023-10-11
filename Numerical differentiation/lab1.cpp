@@ -20,14 +20,14 @@ array<double, N + 1> gauss_method(array<array<double, N + 1>, N + 1> A, array<do
         double a_ii = A[i][i];
         for(int j = i + 1; j < N + 1; j++)
         {
-            b[j] = b[j] - b[i] * A[j][i] / a_ii;
+            b[j] -= b[i] * A[j][i] / a_ii;
             double a_ji = A[j][i];
             for(int k = i; k < N + 1; k++)
-                A[j][k] = A[j][k] - A[i][k] * a_ji / a_ii;
+                A[j][k] -= A[i][k] * a_ji / a_ii;
         }
-        b[i] = b[i] / a_ii;
+        b[i] /= a_ii;
         for(int j = i; j < N + 1; j++)
-            A[i][j] = A[i][j] / a_ii;
+            A[i][j] /= a_ii;
     }
     for(int i = N; i > 0; i--)     // reverse move
         for(int j = i - 1; j >= 0; j--)
@@ -66,9 +66,7 @@ DerivativeCoef<RealType, N> calcDerivativeCoef(const array<RealType, N>& points)
     array<double, N + 1> coefs = gauss_method<N>(A, b);
     array<double, N> otherCoef;
     for(int i = 0; i < N; i++)
-    {
         otherCoef[i] = coefs[i + 1];
-    }
     DerivativeCoef<double, N> S = {coefs[0], otherCoef};
     return S;
 }
