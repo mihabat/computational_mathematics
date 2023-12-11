@@ -32,13 +32,11 @@ struct ArgumentGetter<R(Arg)> {
 template<typename T>
 using Dif = decltype(std::declval<T>() - std::declval<T>());
 
-/* Функция производит интегрирование на одном отрезке */
 template<typename Callable, typename RealType, std::size_t N>
 decltype(auto) integrate(
-    const Callable& func,  // Интегрируемая функция
-    const typename ArgumentGetter<Callable>::Argument& start,  // начало отрезка
-    const typename ArgumentGetter<Callable>::Argument& end)  // конец отрезка
-{
+    const Callable& func,
+    const typename ArgumentGetter<Callable>::Argument& start,
+    const typename ArgumentGetter<Callable>::Argument& end)
     RealType I = 0;
     for (int i = 0; i < N; i++)
     {
@@ -47,13 +45,12 @@ decltype(auto) integrate(
     return (end - start) / 2 * I;
 }
 
-/* Функция производит интегрирование, разбивая отрезок на подотрезки длиной не более dx */
 template<typename Callable, typename RealType, std::size_t N>
 decltype(auto) integrate(
-    const Callable& func,  // Интегрируемая функция
-    const typename ArgumentGetter<Callable>::Argument& start,  // начало отрезка
-    const typename ArgumentGetter<Callable>::Argument& end,  // конец отрезка
-    const Dif<typename ArgumentGetter<Callable>::Argument>& dx)  // Длина подотрезка
+    const Callable& func,
+    const typename ArgumentGetter<Callable>::Argument& start,
+    const typename ArgumentGetter<Callable>::Argument& end,
+    const Dif<typename ArgumentGetter<Callable>::Argument>& dx)
 {
     unsigned int Count = (end - start) / dx + 1;
     double h = (end - start) / Count;
